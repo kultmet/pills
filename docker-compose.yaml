@@ -1,0 +1,71 @@
+---
+version: '3.3'
+services:
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - db_value:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+    env_file:
+      - ./.env
+  # db:
+  #   image: postgres:13.0-alpine
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     POSTGRES_PASSWORD: postgres
+  #   env_file:
+  #     - ./.env
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - cache:/data
+  # test_cache:
+  #   image: redis:6.2-alpine
+  #   restart: always
+  #   ports:
+  #     - '6379:6379'
+    # environment:
+    #   - REDIS_URL=redis://redis:6379
+    # host:
+    #   - redis
+  # worker:
+  #   build: .
+  #   volumes:
+  #     - .:/backend
+  #   ports:
+  #     - 80:8000
+  #   environment:
+  #     - POSTGRES_NAME=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_HOST=db
+  #     - POSTGRES_PORT=5432
+  #     - DEBUG=True
+  #   depends_on:
+  #     - db
+  # web:
+  #   build: .
+  #   command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic upgrade head; uvicorn src.main:app --host 0.0.0.0'
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - 80:8000
+  #   environment:
+  #     - DB_NAME=postgres
+  #     - DB_USER=postgres
+  #     - DB_PASSWORD=postgres
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #   depends_on:
+  #     - db
+volumes:
+  db_value:
+  cache:
+    driver: local
